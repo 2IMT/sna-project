@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/joho/godotenv"
 	"os"
 	"reflect"
 	"regexp"
@@ -27,6 +28,7 @@ var (
 
 func LoadEnvironment() (Environment, error) {
 	var result Environment
+    godotenv.Load()
 
 	n := reflect.TypeOf(result).NumField()
 	for i := 0; i < n; i++ {
