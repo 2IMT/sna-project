@@ -25,7 +25,7 @@ var (
 	stringType  = reflect.TypeOf("")
 )
 
-func LoadEnvironment(filenames ...string) (Environment, error) {
+func LoadEnvironment() (Environment, error) {
 	var result Environment
 
 	n := reflect.TypeOf(result).NumField()
