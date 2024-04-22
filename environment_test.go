@@ -24,7 +24,7 @@ func setEnvs() {
 	os.Setenv("DB_PASS", "db_pass")
 }
 
-func Test(t *testing.T) {
+func TestLoadEnvironment(t *testing.T) {
 	unsetEnvs()
 	setEnvs()
 
