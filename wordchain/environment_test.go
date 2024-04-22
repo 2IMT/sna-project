@@ -38,3 +38,10 @@ func TestLoadEnvironment(t *testing.T) {
     assert.Equal(t, env.DbUser, "db_user")
     assert.Equal(t, env.DbPass, "db_pass")
 }
+
+func TestLoadenvironmentFail(t *testing.T) {
+    unsetEnvs()
+
+    _, err := LoadEnvironment()
+    assert.NotNil(t, err)
+}
