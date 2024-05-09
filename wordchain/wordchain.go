@@ -4,6 +4,7 @@ import "log"
 
 var Env Environment
 var B Bot
+var Db Database
 
 func main() {
     log.Printf("[INFO] loading environment")
@@ -13,6 +14,13 @@ func main() {
 	if err != nil {
         log.Fatalf("[ERROR] Failed to load environment: %s\n", err)
 	}
+
+    log.Println("INFO: initializing database...")
+
+    Db, err = NewDatabase()
+    if err != nil {
+        log.Fatalf("ERROR: failed to initialize database: %s\n", err)
+    }
 
     log.Printf("[INFO] starting the bot")
 
