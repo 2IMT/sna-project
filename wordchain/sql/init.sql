@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS scores {
+    id BIGINT PRIMARY KEY,
+    score BIGINT NOT NULL
+};
