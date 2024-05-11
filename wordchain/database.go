@@ -1,10 +1,10 @@
-package main;
+package main
 
 import (
-    "database/sql"
-    "fmt"
-    
-    _ "github.com/lib/pq"
+	"database/sql"
+	"fmt"
+
+	_ "github.com/lib/pq"
 )
 
 type Database struct {
@@ -13,6 +13,12 @@ type Database struct {
     scoreInsert string
     scoreUpdate string
     scoreExists string
+    leaderboardQuery string
+}
+
+type Score struct {
+    Id int64
+    Score int64
 }
 
 func NewDatabase() (Database, error) {
@@ -85,6 +91,22 @@ func (db *Database) ScoreExists(id int64) (bool, error) {
     return exists, nil
 }
 
+func (db *Database) QueryLeaderboard() ([]Score, error) {
+    scores := make([]Score, 10)
+    rows, err := db.db.Query(db.leaderboardQuery)
+    if err != nil {
+        return nil, fmt.Errorf("failed to query leaderboard: %s", err)
+    }
+
+    for rows.Next() {
+        var score Score
+        rows.Scan(&score.Id, &score.Score)
+        scores = append(scores, score)
+    }
+
+    return scores, nil
+}
+
 func readSql(path string) (string, error) {
     str, err := ReadFile(path)
     if err != nil {
@@ -113,6 +135,11 @@ func loadScripts(db *Database) error {
     }
 
     db.scoreExists, err = readSql("sql/exists_score.sql")
+    if err != nil {
+        return err
+    }
+
+    db.leaderboardQuery, err = readSql("sql/query_leaderboard.sql")
     if err != nil {
         return err
     }
