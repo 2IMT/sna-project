@@ -66,7 +66,18 @@ func incrementScore(id int64) error {
 }
 
 func DisplayLeaderboard() string {
-    return "no info"
+    var leaderboard string
+    scores, err := Db.QueryLeaderboard()
+    if err != nil {
+        log.Printf("ERROR: failed to query leaderboard: %s", err)
+        return "An error occurred"
+    }
+
+    for _, score := range scores {
+        leaderboard += fmt.Sprintf("id: %d, score: %d\n", score.Id, score.Score)
+    }
+
+    return leaderboard
 }
 
 func NewBot() (Bot, error) {
