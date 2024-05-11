@@ -201,7 +201,7 @@ func handleUpdates(api *tgbotapi.BotAPI, msgChan chan Message, connectedPlayers 
 
 		if text=="/play"{
 			B.AddToGameQueue(chatId, username)
-		} else if text=="/leaderbord"{
+		} else if text=="/leaderboard"{
 			B.SendMessage(chatId, DisplayLeaderboard())
 		}else {
             B.ForwardMessage(chatId, text)
