@@ -6,7 +6,6 @@ import (
 	"sync"
 	"net/http"
 	"fmt"
-	"sort"
 )
 
 type Bot struct {
@@ -18,7 +17,6 @@ type Bot struct {
 	player2          Player
 	previousLastLetter byte
 	currentPlayer int
-	players []Player
 }
 
 type Message struct {
@@ -30,7 +28,6 @@ type Message struct {
 type Player struct {
 	PlayerID int64
 	PlayerUsername string
-	Score          int
 }
 
 func NewPlayer(id int64, username string) Player {
@@ -40,41 +37,36 @@ func NewPlayer(id int64, username string) Player {
 	}
 }
 
-func (p *Player) Increment() {
-    p.Score++
-}
+func incrementScore(id int64) error {
+    exists, err := Db.ScoreExists(id)
+    if err != nil {
+        return fmt.Errorf("failed to increment score of %d: %s", id, err)
+    }
 
-func (b *Bot) IncrementScore(playerID int64) {
-    b.mu.Lock()
-    defer b.mu.Unlock()
+    if exists {
+        score, err := Db.QueryScore(id)
+        if err != nil {
+            return fmt.Errorf("failed to query score of %d: %s", id, err)
+        }
 
-    for i := range b.players {
-        if b.players[i].PlayerID == playerID {
-            b.players[i].Increment()
-            return
+        score += 1
+
+        err = Db.UpdateScore(id, score)
+        if err != nil {
+            return fmt.Errorf("failed to update score of %d: %s", id, err)
+        }
+    } else {
+        err := Db.InsertScore(id, 1)
+        if err != nil {
+            return fmt.Errorf("failed to insert score of %d: %s", id, err)
         }
     }
+
+    return nil
 }
 
-func (b *Bot) FindPlayer(playerID int64) Player{
-	for i := range b.players {
-        if b.players[i].PlayerID == playerID {
-            return b.players[i]
-        }
-    }
-	return Player{}
-}
 func DisplayLeaderboard() string {
-    sort.Slice(B.players, func(i, j int) bool {
-        return B.players[i].Score > B.players[j].Score
-    })
-
-    var leaderboard string
-    leaderboard += "Leaderboard:\n"
-    for i, player := range B.players {
-        leaderboard += fmt.Sprintf("%d. %s - Score: %d\n", i+1, player.PlayerUsername, player.Score)
-    }
-    return leaderboard
+    return "no info"
 }
 
 func NewBot() (Bot, error) {
@@ -107,12 +99,6 @@ func (b Bot) GetMessageChan() chan Message {
 func (b *Bot) AddToGameQueue(chatId int64, username string){
 	b.mu.Lock()
 	defer b.mu.Unlock()
-
-	for _, player := range b.players {
-        if player.PlayerID == chatId {
-			return
-        }
-    }
 
 	newPlayer := NewPlayer(chatId, username)
 	b.gameQueue = append(b.gameQueue, newPlayer)
@@ -166,22 +152,22 @@ func(b *Bot) ForwardMessage(chatId int64, text string){
 		if !exist{
 			b.SendMessage(chatId, "Such word does not exist. You lose!")
 			b.SendMessage(opponent, "You won!")
-			b.IncrementScore(opponent)
+            incrementScore(opponent)
 			return
 		} else if b.previousLastLetter != 0 && text[0] != b.previousLastLetter {
 			b.SendMessage(chatId, "The word does not start with the previous word's last letter. You lose!")
 			b.SendMessage(opponent, "You won!")
-			b.IncrementScore(opponent)
+            incrementScore(opponent)
 			return
 		} else if b.currentPlayer == 1 && chatId != b.player1.PlayerID {
             b.SendMessage(chatId, "It's not your turn. You lose!")
 			b.SendMessage(opponent, "You won!")
-			b.IncrementScore(opponent)
+            incrementScore(opponent)
             return
         } else if b.currentPlayer == 2 && chatId != b.player2.PlayerID {
             b.SendMessage(chatId, "It's not your turn. You lose!")
 			b.SendMessage(opponent, "You won!")
-			b.IncrementScore(opponent)
+            incrementScore(opponent)
             return
         } else { 
 			b.SendMessage(opponent, text) 
