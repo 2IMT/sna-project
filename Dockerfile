@@ -8,7 +8,7 @@ RUN go mod download
 
 COPY wordchain/ .
 
-RUN go build -o main
+RUN go build -o main .
 
 FROM golang:1.22-alpine
 
