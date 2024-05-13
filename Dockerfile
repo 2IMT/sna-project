@@ -1,4 +1,4 @@
-FROM golang:1.16.4-buster AS builder
+FROM golang:1.22.0-bookworm AS builder
 
 WORKDIR /build
 
@@ -12,7 +12,7 @@ ARG VERSION=dev
 
 RUN go build -o main -ldflags=-X=main.version=${VERSION} .
 
-FROM golang:1.16.4-alpine
+FROM golang:1.22
 COPY --from=builder /build/main .
 
 EXPOSE 8081
