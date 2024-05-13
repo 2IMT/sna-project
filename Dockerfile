@@ -1,5 +1,6 @@
 FROM golang:1.22
 
+
 WORKDIR /build
 
 COPY wordchain/go.mod .
@@ -8,18 +9,14 @@ RUN go mod download
 
 COPY wordchain/ .
 
-
-
-RUN go build -o main -ldflags=-X=main.version=${VERSION} main.go 
-
-FROM debian:buster-slim
+RUN go build -o main .
 
 FROM golang:1.22-alpine
 
-COPY --from=builder /build/main /go/bin/main --load
+WORKDIR /build
 
-ENV PATH="/go/bin:${PATH}"
+COPY /build/main .
 
 EXPOSE 8081
 
-CMD ["main"]
+CMD ["./main"]
