@@ -7,13 +7,13 @@ COPY wordchain/go.mod .
 COPY wordchain/go.sum .
 RUN go mod download
 
-COPY wordchain/ .
+COPY wordchain/ . -load
 
 RUN go build -o main .
 
 FROM golang:1.22-alpine
 
-COPY /build/main .
+COPY /build/main . --load
 
 EXPOSE 8081
 
