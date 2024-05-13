@@ -10,13 +10,17 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    with:
-      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASS: ${{ secrets.DB_PASS }}
+    
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Setting the environment variables
+      with:
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASS: ${{ secrets.DB_PASS }}
+        
     - name: Build the Docker image
       run: docker-compose up
   test:
