@@ -9,7 +9,9 @@ RUN go mod download
 
 COPY wordchain/ .
 
-RUN go build -o main .
+ARG VERSION=dev
+
+RUN go build -o main -ldflags=-X=main.version=${VERSION} main.go 
 
 FROM golang:1.22-alpine
 
