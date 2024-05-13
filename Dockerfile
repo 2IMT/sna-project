@@ -8,7 +8,11 @@ RUN go mod download
 
 COPY wordchain/ .
 
-RUN go build -o main .
+
+
+RUN go build -o main -ldflags=-X=main.version=${VERSION} main.go 
+
+FROM debian:buster-slim
 
 FROM golang:1.22-alpine
 
