@@ -13,7 +13,7 @@ RUN go build -o main .
 
 FROM golang:1.22-alpine
 
-COPY /build/main . --load
+COPY --load /build/main . 
 
 EXPOSE 8081
 
