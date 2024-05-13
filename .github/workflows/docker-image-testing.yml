@@ -21,10 +21,14 @@ jobs:
       - name: Build
         uses: docker/build-push-action@v5
         with:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASS: ${{ secrets.DB_PASS }}
+          context: .
+          platforms: linux/amd64,linux/arm64
+          tags: user/wordchain:latest
+          secrets: |
+            BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+            DB_NAME: ${{ secrets.DB_NAME }}
+            DB_USER: ${{ secrets.DB_USER }}
+            DB_PASS: ${{ secrets.DB_PASS }}
 
 
   test:
