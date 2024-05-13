@@ -12,7 +12,7 @@ RUN go build -o main .
 
 FROM golang:1.22-alpine
 
-COPY --from=builder /build/main /go/bin/main
+COPY --from=builder /build/main /go/bin/main --load
 
 ENV PATH="/go/bin:${PATH}"
 
