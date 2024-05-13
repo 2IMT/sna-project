@@ -12,10 +12,10 @@ RUN go build -o main .
 
 FROM golang:1.22-alpine
 
-WORKDIR /build
+COPY --from=builder /build/main /go/bin/main
 
-COPY /build/main . --load
+ENV PATH="/go/bin:${PATH}"
 
 EXPOSE 8081
 
-CMD ["./main"]
+CMD ["main"]
