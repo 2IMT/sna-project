@@ -14,7 +14,7 @@ FROM golang:1.22-alpine
 
 WORKDIR /build
 
-COPY --from=builder /build/main .
+COPY /build/main .
 
 EXPOSE 8081
 
